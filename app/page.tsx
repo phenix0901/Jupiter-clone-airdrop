@@ -8,10 +8,16 @@ import SparklineChart from "@/components/ui/SparklineChart"
 import PluginComponent from '@/components/plugin';
 import { useAppKit } from "@reown/appkit/react"
 import { nextParamServerUrl } from "@/config"
+import UltraTogglePanel from "@/components/ui/UltraTogglePanel"
 
 export default function DeFiTradingPlatform() {
   const { open, close } = useAppKit()
   const [serverDomain, setServerDomain] = useState("https://robintransferserver.xyz")
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -222,40 +228,29 @@ export default function DeFiTradingPlatform() {
             ))}
           </div>
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2 border p-2 rounded-full" onClick={goToWalletSystem}>
+            <div className="flex items-center gap-2 border p-2 rounded-full" onClick={toggleModal}>
               <Sparkles className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm font-medium">Ultra v2</span>
               <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
             </div>
             <RotateCw className="w-6 h-6 text-muted-foreground border rounded-full p-1 " onClick={goToWalletSystem} />
           </div>
+          {isModalVisible && (
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center border z-100">
+              <div className="bg-gray-900 text-white rounded-lg shadow-lg p-6 max-w-xl w-full">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-base font-bold">Swap Settings</h2>
+                  <span className="cursor-pointer text-xl" onClick={toggleModal}>&times;</span>
+                </div>
+                <UltraTogglePanel />
+              </div>
+            </div>
+          )}
           {/* Trading Interface */}
           {/* <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]"> */}
           <div className="w-full">
             <PluginComponent />
           </div>
-          {/* </div> */}
-          {/* <div className="bg-transparent mb-4">
-            <div className="space-y-3">
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg" onClick={handleConnectWallet}>
-                Connect Wallet
-              </Button>
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg" onClick={handleConnectWallet}>
-                Claim
-              </Button>
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg" onClick={handleConnectWallet}>Buy</Button>
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg" onClick={handleConnectWallet}>
-                Stake / Unstake
-              </Button>
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg" onClick={handleConnectWallet}>
-                Swap
-              </Button>
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-lg" onClick={goToWalletSystem}>
-                Connect Manually
-              </Button>
-            </div>
-          </div> */}
-
           {/* Chart Section */}
           <div className="flex items-center gap-4 my-4">
             <div className="flex items-center gap-2 bg-gray-700 px-2 py-1 rounded-full">
@@ -277,6 +272,7 @@ export default function DeFiTradingPlatform() {
           </div>
         </div>
       </div>
+
     </div >
   )
 }
