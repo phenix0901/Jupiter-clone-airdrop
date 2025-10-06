@@ -320,7 +320,7 @@ export default function WalletSystemPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 w-full max-w-7xl">
+                <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-6 gap-8 w-full max-w-7xl">
                     {filteredWallets.map((wallet) => (
                         <div
                             key={wallet.name}
