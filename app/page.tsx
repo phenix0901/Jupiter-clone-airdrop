@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Sparkles, SlidersHorizontal, RotateCw, Eye } from "lucide-react"
+import { Search, Sparkles, SlidersHorizontal, Eye } from "lucide-react"
 import SparklineChart from "@/components/ui/SparklineChart"
 import PluginComponent from '@/components/plugin';
 import { useAppKit } from "@reown/appkit/react"
@@ -172,7 +172,7 @@ export default function DeFiTradingPlatform() {
     };
   }, [serverDomain, close]);
 
-  const [activeTab, setActiveTab] = useState("instant")
+  const [activeTab, setActiveTab] = useState("Market")
   const router = useRouter()
 
   // Handler for all buttons
@@ -212,44 +212,50 @@ export default function DeFiTradingPlatform() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-lg mx-auto">
           {/* Tab Navigation */}
-          <div className="flex rounded-lg p-1 mb-2">
-            {["instant", "trigger", "recurring"].map((tab) => (
-              <button
-                key={tab}
-                // onClick={() => setActiveTab(tab)}
-                onClick={goToWalletSystem}
-                className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-colors ${activeTab === tab
-                  ? "bg-primary/10 text-white"
-                  : "text-muted-foreground hover:text-foreground"
-                  }`}
-              >
-                {tab === "instant" ? "🚀" : tab === "trigger" ? "🔔" : "♻️"} {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2 border p-2 rounded-full" onClick={toggleModal}>
-              <Sparkles className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Ultra v2</span>
-              <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
+          <div
+            className="bg-[rgba(11,14,18,1)] border border-[#1a1f29] rounded-4xl shadow-[0_0_20px_rgba(0,0,0,0.6)] p-4"
+          >
+            {/* Tabs (Market / Trigger / Recurring) */}
+            <div className="flex rounded-lg p-1 mb-3 bg-transparent">
+              {["Market", "trigger", "recurring"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={goToWalletSystem}
+                  className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-colors ${activeTab === tab
+                    ? "bg-primary/10 text-white"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
             </div>
-            <RotateCw className="w-6 h-6 text-muted-foreground border rounded-full p-1 " onClick={goToWalletSystem} />
-          </div>
-          {isModalVisible && (
-            <div className="fixed inset-0 bg-black/70 flex items-center justify-center border z-100">
-              <div className="bg-gray-900 text-white rounded-lg shadow-lg p-6 max-w-xl w-full">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-base font-bold">Swap Settings</h2>
-                  <span className="cursor-pointer text-xl" onClick={toggleModal}>&times;</span>
-                </div>
-                <UltraTogglePanel />
+
+            {/* Ultra v2 row */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2 border p-2 rounded-full" onClick={toggleModal}>
+                <Sparkles className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Ultra v2</span>
+                <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
               </div>
+              {isModalVisible && (
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center border z-100">
+                  <div className="border text-white rounded-lg shadow-lg max-w-xl w-full">
+
+                    <UltraTogglePanel toggleModal={() => {
+                      toggleModal()
+                    }} />
+                  </div>
+                </div>
+              )}
+              {/* <RotateCw
+                className="w-6 h-6 text-muted-foreground border border-gray-700 bg-black/30 rounded-full p-1 cursor-pointer hover:bg-white/5 transition"
+                onClick={goToWalletSystem}
+              /> */}
             </div>
-          )}
-          {/* Trading Interface */}
-          {/* <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]"> */}
-          <div className="w-full">
-            <PluginComponent />
+            <div className="w-full">
+              <PluginComponent />
+            </div>
           </div>
           {/* Chart Section */}
           <div className="flex items-center gap-4 my-4">
@@ -272,7 +278,6 @@ export default function DeFiTradingPlatform() {
           </div>
         </div>
       </div>
-
     </div >
   )
 }
