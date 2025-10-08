@@ -133,3 +133,29 @@
     transform: translateX(200px);
   }
 }
+
+::-webkit-scrollbar {
+  width: .35rem;
+  height: .35rem;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #90a1b9;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #67778e;
+  border-radius: 9999px;
+}
+
+body::-webkit-scrollbar-track-piece {
+  background-color: #1c2936;
+}
+
+::-webkit-scrollbar-track-piece {
+  background-color: transparent;
+}

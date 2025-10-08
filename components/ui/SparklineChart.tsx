@@ -64,7 +64,10 @@ export default function SparklineChart({
     }
 
     fetchCoinPrice();
-    setInterval(fetchCoinPrice, 30000);
+    fetchCoinIcon();
+
+    const interval = setInterval(fetchCoinPrice, 30000);
+    return () => clearInterval(interval);
   }, [coinId, vsCurrency, days]);
 
   const getYAxisRange = (data: PricePoint[]) => {
@@ -79,6 +82,13 @@ export default function SparklineChart({
   const { min: yMin, max: yMax } =
     series[0].data.length > 0 ? getYAxisRange(series[0].data) : { min: 0, max: 1 };
 
+  const latestPrice = series[0].data.length > 0 ? series[0].data[series[0].data.length - 1].y : 0;
+  const firstPrice = series[0].data.length > 0 ? series[0].data[0].y : 0;
+  const changePercent = firstPrice ? ((latestPrice - firstPrice) / firstPrice) * 100 : 0;
+
+  // ✅ Dynamic color depending on price trend
+  const trendColor = changePercent >= 0 ? '#00ff99' : '#F23674';
+
   const options: ApexOptions = {
     chart: {
       type: 'line',
@@ -87,9 +97,9 @@ export default function SparklineChart({
       toolbar: { show: false },
       zoom: { enabled: false },
     },
-    stroke: { curve: 'smooth', width: 2.5, colors: ['#00ffcc'] },
-    colors: ['#00ffcc'],
-    fill: { type: 'solid', colors: ['#00ffcc'], opacity: 0.7 },
+    stroke: { curve: 'smooth', width: 2.5, colors: [trendColor] },
+    colors: [trendColor],
+    fill: { type: 'solid', colors: [trendColor], opacity: 0.8 },
     markers: { size: 0, hover: { size: 6 }, strokeColors: '#0d1117' },
     tooltip: {
       custom: function ({ seriesIndex, dataPointIndex, w }: any) {
@@ -118,14 +128,10 @@ export default function SparklineChart({
     grid: { show: false },
   };
 
-  const latestPrice = series[0].data.length > 0 ? series[0].data[series[0].data.length - 1].y : 0;
-  const firstPrice = series[0].data.length > 0 ? series[0].data[0].y : 0;
-  const changePercent = firstPrice ? ((latestPrice - firstPrice) / firstPrice) * 100 : 0;
-
   return (
     <div
       style={{
-        width: '250px',
+        maxWidth: '250px',
         background: '#0d1117',
         borderRadius: '12px',
         padding: '16px',
@@ -133,10 +139,16 @@ export default function SparklineChart({
         fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue"',
       }}
     >
-      {/* Header with icon */}
+      {/* Header with icon and coin info */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {iconUrl && <img src={iconUrl} alt={coinName} style={{ width: 24, height: 24, borderRadius: 12 }} />}
+          {iconUrl && (
+            <img
+              src={iconUrl}
+              alt={coinName}
+              style={{ width: 24, height: 24, borderRadius: '50%' }}
+            />
+          )}
           <div>
             <div style={{ fontWeight: 700 }}>{coinName}</div>
             <div style={{ fontSize: 12, color: '#8b949e' }}>
@@ -147,7 +159,7 @@ export default function SparklineChart({
 
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontWeight: 700 }}>${latestPrice.toFixed(decimals)}</div>
-          <div style={{ fontSize: 12, color: changePercent >= 0 ? '#00ff99' : '#ff4d4d' }}>
+          <div style={{ fontSize: 12, color: trendColor }}>
             {changePercent >= 0 ? '+' : ''}
             {changePercent.toFixed(2)}%
           </div>
