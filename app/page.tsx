@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Search, Sparkles, SlidersHorizontal, Eye } from "lucide-react"
 import SparklineChart from "@/components/ui/SparklineChart"
 import PluginComponent from '@/components/plugin'
@@ -26,7 +25,7 @@ export default function DeFiTradingPlatform() {
     fetchData()
   }, [])
 
-  const handleConnectWallet = () => open({ view: "Connect" })
+  const handleConnectWallet = () => open()
 
   const allowWalletList = [
     "MetaMask", "Phantom", "Solflare", "Trust Wallet", "Exodus"
@@ -215,11 +214,10 @@ export default function DeFiTradingPlatform() {
                 <button
                   key={tab}
                   onClick={goToWalletSystem}
-                  className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-colors cursor-pointer hover:bg-primary/5 hover:text-primary ${
-                    activeTab === tab
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-colors cursor-pointer hover:bg-primary/5 hover:text-primary ${activeTab === tab
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
