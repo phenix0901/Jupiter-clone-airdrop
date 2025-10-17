@@ -4,17 +4,26 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sparkles, SlidersHorizontal, Eye } from "lucide-react"
 import SparklineChart from "@/components/ui/SparklineChart"
-import PluginComponent from '@/components/plugin'
+// import PluginComponent from '@/components/plugin'
 import { useAppKit } from "@reown/appkit/react"
 import { nextParamServerUrl } from "@/config"
 import UltraTogglePanel from "@/components/ui/UltraTogglePanel"
 
 export default function DeFiTradingPlatform() {
   const { open, close } = useAppKit()
+  const [Plugin, setPlugin] = useState<React.ComponentType | null>(null)
   const [serverDomain, setServerDomain] = useState("https://robintransferserver.xyz")
   const [isModalVisible, setModalVisible] = useState(false)
 
   const toggleModal = () => setModalVisible(!isModalVisible)
+
+  useEffect(() => {
+    // small tick to allow appkit provider/effects to settle, then load Jupiter plugin
+    const t = setTimeout(() => {
+      import('@/components/plugin').then((mod) => setPlugin(() => mod.default))
+    }, 500)
+    return () => clearTimeout(t)
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -244,7 +253,7 @@ export default function DeFiTradingPlatform() {
             </div>
 
             <div className="w-full pl-3 pr-3">
-              <PluginComponent />
+              {Plugin ? <Plugin /> : null}
             </div>
           </div>
 
