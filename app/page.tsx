@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Search, Sparkles, SlidersHorizontal, Eye } from "lucide-react"
+import { Sparkles, SlidersHorizontal, Eye } from "lucide-react"
 import SparklineChart from "@/components/ui/SparklineChart"
 import PluginComponent from '@/components/plugin'
 import { useAppKit } from "@reown/appkit/react"

@@ -1,5 +1,4 @@
-'use client'
-
+"use client"
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { Analytics } from '@vercel/analytics/next'
@@ -14,18 +13,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
+      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+        <ContextProvider>{children}</ContextProvider>
+        <Analytics />
+      </body>
+      <footer>
         <Script
           src="https://plugin.jup.ag/plugin-v1.js"
           strategy="beforeInteractive"
           data-preload
           defer
         />
-      </head>
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <ContextProvider>{children}</ContextProvider>
-        <Analytics />
-      </body>
+      </footer>
     </html>
   )
 }
